@@ -1,0 +1,45 @@
+version: '3'
+
+networks:
+  network-1:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+    container_name: 'laravel_app'
+    networks:
+      - network-1
+  nginx:
+    image: nginx
+    ports:
+      - "8000:8000" 
+    volumes:
+      - .:/var/www 
+      - ./docker/nginx/back/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - app
+    container_name: 'nginx_test'
+    networks:
+      - network-1
+  db:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234pswrd
+      MYSQL_DATABASE: test
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testuserpswrd
+    volumes:
+      - ./tmp/db:/var/lib/mysql/
+    container_name: 'db'
+    networks:
+      - network-1
