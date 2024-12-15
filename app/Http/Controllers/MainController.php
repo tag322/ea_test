@@ -20,6 +20,8 @@ class MainController
         ]);
 
         Log::info('created');
+
+        return 'fetched';
     }
 
     public function fetchOrders() {
